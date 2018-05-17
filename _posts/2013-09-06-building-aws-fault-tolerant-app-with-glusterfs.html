@@ -1,0 +1,63 @@
+---
+layout: post
+status: publish
+published: true
+title: Building AWS fault tolerant app with GlusterFS
+author:
+  display_name: admin
+  login: admin
+  email: igord@bra.in.rs
+  url: ''
+author_login: admin
+author_email: igord@bra.in.rs
+wordpress_id: 26
+wordpress_url: http://www.cloudhowto.org/?p=26
+date: '2013-09-06 16:36:33 +0100'
+date_gmt: '2013-09-06 16:36:33 +0100'
+categories:
+- AWS
+- Architecture
+tags: []
+comments: []
+---
+<p>Building fault-tolerant and scalable web application is a MUST for every serious business and platform. <a title="AWS Fault Tolerant web applications" href="http://d36cz9buwru1tt.cloudfront.net/AWS_Building_Fault_Tolerant_Applications.pdf">Here </a>you can find nice overview of techniques to achieve that in AWS.</p>
+<p>But since AWS is a platform which allows you to build whatever-you-want on the top of it, some extra work is needed to achieve completely redundant and fault tolerant web app.</p>
+<p>Here are instructions how to install GlusterFS on two instances which will be in replication mode, so in case one instance goes down, another will continue working.</p>
+<p>Familiarize yourself with GlusterFS <a title="GlusterFS" href="http://www.gluster.org/community/documentation/index.php/GlusterFS_Concepts">HERE</a></p>
+<p>The web app will have the following components:</p>
+<p>- Elastic Load balancer in 2 AZ</p>
+<p>- In each AZ one web server instance</p>
+<p>- in each AZ one glusterFS instance</p>
+<p>- RDS database with replication</p>
+<p><!--more--></p>
+<p><span style="text-decoration: underline;">GlusterFS server installation (you need to do this on 2 servers, one in each AZ)<br />
+</span></p>
+<p>Create a VPC, create 2 private subnets. In each private subnet, launch AmazonLinux 64-bit. Let's say that first server is having private IP GLU1 and second GLU2.</p>
+<p>We will use XFS file system, which comes very good with GlusterFS</p>
+<p><code>yum install xfsprogs.i686 xfsprogs.x86_64 xfsprogs-devel.x86_64 xfsprogs-qa-devel.x86_64</code></p>
+<p>Create additional EBS volume, attach it as /dev/xvdb, create a single partition and create XFS file system, and mount to /exports/brick1</p>
+<p><code>fdisk /dev/xvdb</code></p>
+<p>mkfs.xfs /dev/xvdb1</p>
+<p>mkdir -p /export/brick1</p>
+<p>mount /dev/xvdb1 /export/brick1/</p>
+<p>echo "/dev/xvdb1 /export/brick1 xfs defaults 0 0" >> /etc/fstab</p>
+<p>Install GlusterFS (on both servers):</p>
+<p><code>yum install glusterfs-geo-replication.x86_64 glusterfs-rdma.x86_64 glusterfs.x86_64 glusterfs-devel.x86_64 glusterfs-fuse.x86_64 glusterfs-server.x86_64 glusterfs-vim.x86_64</code></p>
+<p>Configure GlusterFS primary server (this needs to be done only on primary)</p>
+<p><code>gluster peer probe GLU-2</code></p>
+<p>gluster volume create gv0 replica 2 GLU-1:/export/brick1 GLU-2:/export/brick1</p>
+<p>gluster volume info</p>
+<p>Basically, after this, you have created GlusterFS cluster, which consist of 2 servers. Each server is having separated EBS volume which is representing a "brick".</p>
+<p><span style="text-decoration: underline;">GlusterFS Client configuration</span></p>
+<p>Now, after we setup GlusterFS servers, we need to setup also a clients. So basically, each web server will connect to a GlusterFS which is in the same AZ. So instance in AZ A will connect to GlusterFS in AZ A, and instance in AZ B will connect to GlusterFS server in AZ B. That way you will have fault-tolerance, so if one of those servers goes down, another will continue to work. ELB should take care of removing that instance since it will no longer return 200.</p>
+<p>Installation on client side:</p>
+<p><code>yum install glusterfs-fuse.x86_64 glusterfs.x86_64 glusterfs-devel.x86_64 glusterfs-vim.x86_64</code></p>
+<p>Mounting GlusterFS server as a local mount:</p>
+<p><code>create /mnt/glusterfs</code></p>
+<p>mount.glusterfs GLU-1:gv0 /mnt/glusterfs</p>
+<p>And on second web server/instance do that, too, but mount different GlusterFS server:</p>
+<p><code>create /mnt/glusterfs</code></p>
+<p>mount.glusterfs GLU-2:gv0 /mnt/glusterfs</p>
+<p><em>Note: GlusterFS documentation said that you need to mount as mount.glusterfs GLU-2:/export/brick1 /mnt/glusterfs</em> which is <strong>NOT WORKING!</strong></p>
+<p><em>No</em>te2:<em> You can install both server and client on the same machine, which is kinda handy!</em></p>
+<p>&nbsp;</p>

@@ -1,0 +1,26 @@
+---
+layout: post
+status: publish
+published: true
+title: Find instances with missing tag
+author:
+  display_name: admin
+  login: admin
+  email: igord@bra.in.rs
+  url: ''
+author_login: admin
+author_email: igord@bra.in.rs
+wordpress_id: 173
+wordpress_url: http://www.cloudhowto.org/?p=173
+date: '2015-12-02 21:29:25 +0000'
+date_gmt: '2015-12-02 21:29:25 +0000'
+categories:
+- AWS
+- Python Boto
+tags: []
+comments: []
+---
+<p>Sometimes you want to find out if instances are not tagged with some Tag key, for example if you are grouping your instances with tag "Project" or similar.</p>
+<p>You can use the following script for that which will send SNS notification and also e-mail with all instances which doesn't have particular tag, showing you how many instances are running in total.</p>
+<p>Change SNS topic to your one and also e-mail source and recipients.</p>
+<p>Script can be downloaded from <a title="Official Cloudhowto Github" href="https://github.com/cloudhowto/python/blob/master/print_missing_tags.py" target="_blank">official Cloudhowto GitHub repository</a>.</p>

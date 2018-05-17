@@ -1,0 +1,42 @@
+---
+layout: post
+status: publish
+published: true
+title: Backup files to S3 using Python Boto
+author:
+  display_name: admin
+  login: admin
+  email: igord@bra.in.rs
+  url: ''
+author_login: admin
+author_email: igord@bra.in.rs
+wordpress_id: 11
+wordpress_url: http://www.cloudhowto.org/?p=11
+date: '2013-07-10 11:48:54 +0100'
+date_gmt: '2013-07-10 11:48:54 +0100'
+categories:
+- AWS
+- Python Boto
+tags: []
+comments: []
+---
+<p>If you want to copy local files from your Linux box to AWS S3, there are many ways to achieve that.</p>
+<p>Here is one Python script which is using Boto, a interface between Python and AWS S3.</p>
+<p><code>from boto.s3.connection import S3Connection<br />
+from boto.s3.key import Key<br />
+import boto</p>
+<p>#create connection<br />
+conn = S3Connection(aws_access_key_id='YOUR_ACCESS_KEY',aws_secret_access_key='YOUR_SECRET_ACCESS_KEY')</p>
+<p>#create S3 bucket<br />
+b = conn.create_bucket('new-bucket-name')<br />
+k = Key(b)</p>
+<p>#choose destination object name<br />
+dest = raw_input ("destination file name in s3?")</p>
+<p>dest2 = "%s" % dest<br />
+k.key = dest2</p>
+<p># put local file name you want to backup to S3<br />
+source = raw_input ("source file name which you want to backup?")<br />
+source2 = "%s" % source<br />
+k.set_contents_from_filename(source2)</code></p>
+<p>So basically, you can save this script in your $PATH as "s3-backup" and then just call it from your Linux shell.</p>
+<p>Note: AWS S3 bucket names are acting as one big domain, so it is not possible to have the same bucket name someone already created. If you receive error because of this, create bucket with your own name</p>

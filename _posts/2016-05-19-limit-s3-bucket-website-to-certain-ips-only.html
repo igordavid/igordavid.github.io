@@ -1,0 +1,43 @@
+---
+layout: post
+status: publish
+published: true
+title: Limit S3 bucket website to certain IPs only
+author:
+  display_name: admin
+  login: admin
+  email: igord@bra.in.rs
+  url: ''
+author_login: admin
+author_email: igord@bra.in.rs
+wordpress_id: 187
+wordpress_url: http://www.cloudhowto.org/?p=187
+date: '2016-05-19 08:47:29 +0100'
+date_gmt: '2016-05-19 08:47:29 +0100'
+categories:
+- Uncategorized
+tags: []
+comments: []
+---
+<p>This is very useful feature, if you want to <a title="host static website on s3" href="http://docs.aws.amazon.com/AmazonS3/latest/dev/WebsiteHosting.html" target="_blank">host static website on S3</a>, and you want to keep your data secured and allow access only from certain IP networks, you can modify S3 bucket policy and put the following:</p>
+<pre></pre>
+<pre><code>{
+  "Version": "2012-10-17",
+  "Id": "S3PolicyId1",
+  "Statement": [
+    {
+      "Sid": "IPAllow",
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": "s3:*",
+      "Resource": "arn:aws:s3:::<em><code>examplebucket</code></em>/*",
+      "Condition": {
+         "IpAddress": {"aws:SourceIp": "54.240.143.0/24"},
+         "NotIpAddress": {"aws:SourceIp": "54.240.143.188/32"} 
+      } 
+    } 
+  ]
+}
+
+More details can be found <a title="here" href="http://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html#example-bucket-policies-use-case-3" target="_blank">here</a>.
+</code></pre>

@@ -1,0 +1,57 @@
+---
+layout: post
+status: publish
+published: true
+title: Administering files on a server through web via ftp with net2ftp
+author:
+  display_name: admin
+  login: admin
+  email: igord@bra.in.rs
+  url: ''
+author_login: admin
+author_email: igord@bra.in.rs
+wordpress_id: 8
+wordpress_url: http://www.cloudhowto.org/?p=8
+date: '2013-07-09 22:26:55 +0100'
+date_gmt: '2013-07-09 22:26:55 +0100'
+categories:
+- Useful tools
+tags: []
+comments: []
+---
+<p>There are many methods for this, here is one handy:</p>
+<p>- login to your server via SSH with "ec2-user"</p>
+<p>- install FTP and Apache server, for example "yum install proftpd httpd"</p>
+<p>- make sure the servers are running and will launch on next reboot:</p>
+<p>" chkconfig proftpd on"<br />
+" chkconfig httpd on"<br />
+" service proftpd start"<br />
+" service httpd start"</p>
+<p>- create directory "mkdir /home/ec2-user/public_html"</p>
+<p>- configure Apache server with one virtualhost:</p>
+<p>"<br />
+<VirtualHost *:80><br />
+ServerAdmin    YOUR E-MAIL<br />
+DocumentRoot   /home/ec2-user/public_html<br />
+ServerName     YOUR-HOSTNAME<br />
+ErrorLog       logs/YOUR-HOSTNAME-error_log<br />
+CustomLog      logs/YOUR-HOSTNAME-access_log combined<br />
+</VirtualHost><br />
+<Directory "/home/ec2-user/public_html"><br />
+Options +Indexes<br />
+AllowOverride All<br />
+Order allow,deny<br />
+Allow from All<br />
+RewriteEngine On<br />
+</Directory><br />
+"</p>
+<p>- create 2 new directories "mkdir /home/ec2-user/public_html/net2ftp" and "mkdir /home/ec2-user/net2ftp"</p>
+<p>- download <a href="http://www.net2ftp.com/download/net2ftp_v1.0.zip" title="net2ftp" target="_blank">net2ftp</a> software to /home/ec2-user/net2ftp, for example with the command "wget http://www.net2ftp.com/download/net2ftp_v1.0.zip"</p>
+<p>- unzip all the files on the server with "unzip net2ftp_v1.0.zip".</p>
+<p>- copy net2ftp files with "cp -R /home/ec2-user/net2ftp/files_to_upload/* /home/ec2-user/public_html/net2ftp/."</p>
+<p>Install net2ftp:</p>
+<p>- The /temp directory should be chmodded to 777 with command "chmod /home/ec2-user/public_html/net2ftp/temp"</p>
+<p>- Set your settings in the settings.inc.php file such as Admin panel password. If no password is entered, the Admin panel is not accessible.</p>
+<p>- A database is only required if you want to log the actions of the users. To create the tables, execute the SQL query in the file "create_tables.sql". This can easily be done in PhpMyAdmin, the popular front-end to MySQL.</p>
+<p>After that, you can browser your files by entering in browser "http://YOUR-IP/net2ftp"</p>
+<p>Enjoy!</p>

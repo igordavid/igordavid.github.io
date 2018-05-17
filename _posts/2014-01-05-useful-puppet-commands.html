@@ -1,0 +1,36 @@
+---
+layout: post
+status: publish
+published: true
+title: Useful puppet commands
+author:
+  display_name: admin
+  login: admin
+  email: igord@bra.in.rs
+  url: ''
+author_login: admin
+author_email: igord@bra.in.rs
+wordpress_id: 33
+wordpress_url: http://www.cloudhowto.org/?p=33
+date: '2014-01-05 18:38:17 +0000'
+date_gmt: '2014-01-05 18:38:17 +0000'
+categories:
+- Linux
+tags: []
+comments: []
+---
+<p>First, install <a href="https://docs.puppetlabs.com/puppetdb/latest/" title="PuppetDB" target="_blank">PuppetDB</a> on your puppetmaster, as it will greatly make Puppet administration easier.</p>
+<p>After that, you can check for nodes which are registered by puppet, by using command:</p>
+<p><code>curl -s http://localhost:8080/v3/nodes</code></p>
+<p>To query inventory for nodes:</p>
+<p><code>curl -k -H "Accept: yaml" https://localhost:8140/producton/facts/*</code></p>
+<p>To de-activate node:</p>
+<p><code>puppet node deactivate NODE_NAME </code></p>
+<p>To find out what's puppet master certificate name (very useful in troubleshooting DNS related issues):</p>
+<p><code>puppet master --configprint certname</code></p>
+<p>To check if there are any puppet client nodes waiting to be authorised on server:</p>
+<p><code>puppet ca list</code></p>
+<p>To sign puppet client requset:</p>
+<p><code>puppet ca sign certname</code></p>
+<p>To delete client certificate request:</p>
+<p><code>puppet ca destroy certname</code></p>

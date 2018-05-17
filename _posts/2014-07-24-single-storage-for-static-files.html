@@ -1,0 +1,30 @@
+---
+layout: post
+status: publish
+published: true
+title: Single storage for static files
+author:
+  display_name: admin
+  login: admin
+  email: igord@bra.in.rs
+  url: ''
+author_login: admin
+author_email: igord@bra.in.rs
+wordpress_id: 75
+wordpress_url: http://www.cloudhowto.org/?p=75
+date: '2014-07-24 13:17:15 +0100'
+date_gmt: '2014-07-24 13:17:15 +0100'
+categories:
+- AWS
+- Architecture
+tags: []
+comments: []
+---
+<p>It is best practice to have fault-tolerant and robust storage for your static web files, such as images or css files. Ideal product for those services is <a href="http://aws.amazon.com/s3" title="AWS S3" target="_blank">AWS S3</a></p>
+<p>It can be done in multiple ways, for example by syncing your file system to S3.</p>
+<p>Another way is to solve this on application level, so your application will copy files to S3 and modify links to use S3 path instead of local storage.</p>
+<p>If you are using Wordpress, here is a great plugin called <a href="https://github.com/deliciousbrains/wp-amazon-web-services" title="AWS" target="_blank">AWS for Wordpress</a></p>
+<p>After you install it, you can install <a href="http://wordpress.org/plugins/amazon-s3-and-cloudfront/" title="Amazon S3 and CloudFront" target="_blank">Amazon S3 and Cloudfront</a> plugin.</p>
+<p>The installation is quite straightforward and once you submit your credentials (Public/Secret key), you can create new S3 buckets or use existing ones.</p>
+<p>After this, all new media files will be automatically stored into your S3 bucket and Wordpress will start using S3 for source of media files.</p>
+<p><a href="https://s3.amazonaws.com/vhosting-cloudhowto/wp-content/uploads/2014/07/24131601/AWS_StaticWebsiteHosting_Architecture_step1.png"><img src="https://s3.amazonaws.com/vhosting-cloudhowto/wp-content/uploads/2014/07/24131601/AWS_StaticWebsiteHosting_Architecture_step1-300x256.png" alt="AWS S3" width="300" height="256" class="alignnone size-medium wp-image-76" /></a></p>

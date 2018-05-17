@@ -1,0 +1,43 @@
+---
+layout: post
+status: publish
+published: true
+title: Git as a must
+author:
+  display_name: admin
+  login: admin
+  email: igord@bra.in.rs
+  url: ''
+author_login: admin
+author_email: igord@bra.in.rs
+wordpress_id: 192
+wordpress_url: http://cloud.igord.net/?p=192
+date: '2017-05-19 11:55:54 +0100'
+date_gmt: '2017-05-19 11:55:54 +0100'
+categories:
+- Git
+tags: []
+comments: []
+---
+<p>If you haven't yet used <a href="https://git-scm.com/">Git</a>, now is good time to utilize it. It is most powerful tool for collaboration between multiple developers, system administrators, operators or anyone who is using any kind of code. I had a friend before who used it as a backup solution, too!</p>
+<p>There are many companies who are using services based on Git, but most popular are GitHub and BitBucket. GitHub requires you to pay if you want to have private <em>repository</em> (the place where you store your data), BitBucket is free.</p>
+<p>You start with git by going into a directory which you want to share with other people or systems (such as Github) and then initialize it with the command:<br />
+<code>$ cd your-code</code><br />
+<code>$ git init </code><br />
+And setup your name and basic info:</p>
+<pre class="highlight"><code class="language-console" data-lang="console">$ git config --global user.name "Igor David"
+$ git config --global user.email igor.david@igor.david</code></pre>
+<p>Now, I won't go here into details about all Git things since there are LOT of GREAT documentation around and websites, one of the most useful is this: http://ohshitgit.com/</p>
+<p>But I will summarize the most used commands for me:</p>
+<p><code>$ git status </code>        -> check current status<br />
+<code>$ git add . </code>         -> add all files in current directory<br />
+<code>$ git commit -a -m "comment"</code>  -> commit all files with adding "comment"<br />
+<code>$ git add -a --amend</code>  -> add changes to existing commit by amending. This is very useful if you want to make small change and add it to existing commit but don't make any visibility of that. Don't cheat! :)<br />
+<code>$ git rebase -i</code>      -> Let's say that you have three commits, A B and C and you want to "squash" them into one and make your commit history looks nice. You can execute this command, put letter "p" for the commit which you want to pick, put letter "s" for the commits which you want to squash into the one marked with "p", and voila! Git will do this for you. BE VERY CAREFUL NOT to forget to choose some of the commits as they will be deleted.<br />
+<code>$ git remote -v </code>     -> check remote repository status<br />
+<code>$ git fetch upstream</code> -> fetch data from remote upstream<br />
+<code>$ git rebase upstream/develop </code> -> rebase your current commit on the top of everyone's else commits. This means that your current commit will be put as a first commit in the git history, making it great for collaborating with other team members.<br />
+<code>$ git reflog </code>        -> observe which HEADs are present and which actions happened, so you can for example undo some changes if required<br />
+<code>$ git reset --soft HEAD@{1}</code> -> once you want to "jump" to certain HEAD, you can do it with this command<br />
+<code>$ tig</code>                -> this is separated package but VERY useful<br />
+&nbsp;</p>

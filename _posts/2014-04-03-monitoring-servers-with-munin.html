@@ -1,0 +1,49 @@
+---
+layout: post
+status: publish
+published: true
+title: Monitoring servers with Munin
+author:
+  display_name: admin
+  login: admin
+  email: igord@bra.in.rs
+  url: ''
+author_login: admin
+author_email: igord@bra.in.rs
+wordpress_id: 59
+wordpress_url: http://www.cloudhowto.org/?p=59
+date: '2014-04-03 11:58:48 +0100'
+date_gmt: '2014-04-03 11:58:48 +0100'
+categories:
+- Linux
+tags: []
+comments: []
+---
+<p>If you are looking a way to monitor your servers statistics (disc, network, CPU, processes..) - <a href="http://munin-monitoring.org" title="Munin" target="_blank">Munin</a> is one of great tools for that.</p>
+<p>You need first to install <strong> Munin server</strong> on one node:</p>
+<p><code></p>
+<p>yum install munin</p>
+<p></code></p>
+<p>..which will automatically install Apache configuration file into /etc/httpd/conf.d/munin.conf and put all other configuration files into /etc/munin</p>
+<p>Next what you need to do is to modify /etc/munin/munin.conf in order to add your client hosts which you want to monitor (change address to suit your needs):</p>
+<p><code><br />
+[web1]<br />
+        address 10.0.1.1<br />
+        use_node_name yes<br />
+</code></p>
+<p>After that, you need to install <strong>Munin client</strong> on a client machines which you want to monitor:</p>
+<p><code><br />
+yum install munin-node</p>
+<p>munin-node-configure --suggest</p>
+<p></code></p>
+<p>.. and in /etc/munin/munin-node.conf add the following (replace your Munin master server):</p>
+<p><code><br />
+allow ^127\.0\.0\.1$<br />
+allow ^::1$<br />
+allow Munin-master-server-IP<br />
+</code></p>
+<p>After that, you need to start munin-node service on clients:</p>
+<p><code><br />
+/etc/init.d/munin-node start<br />
+chkconfig munin-node on<br />
+</code></p>

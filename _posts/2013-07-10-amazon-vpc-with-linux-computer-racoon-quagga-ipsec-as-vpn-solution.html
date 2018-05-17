@@ -1,0 +1,179 @@
+---
+layout: post
+status: publish
+published: true
+title: Amazon VPC with Linux computer / Racoon / Quagga / IPSec as VPN solution
+author:
+  display_name: admin
+  login: admin
+  email: igord@bra.in.rs
+  url: ''
+author_login: admin
+author_email: igord@bra.in.rs
+wordpress_id: 19
+wordpress_url: http://www.cloudhowto.org/?p=19
+date: '2013-07-10 14:01:22 +0100'
+date_gmt: '2013-07-10 14:01:22 +0100'
+categories:
+- AWS
+- Architecture
+- Linux
+tags: []
+comments: []
+---
+<p>If you need Amazon VPC but you don't have any piece of hardware equipment that will satisfy requirements (as described here), don't panic!</p>
+<p>There is a solution - you can use Linux to route your traffic to Amazon VPC!</p>
+<p>This scenario has been successfully tested and is working on following configuration:</p>
+<p>Debian 6 with one ethernet card with public IP (no NAT), Amazon VPC network 10.0.0.0/16 with 2 subnets (10.0.0.0/24 public and 10.0.1.0/24 private), ipsec-tools 1:0.8.0-9, racoon 1:0.8.0-9, quagga 0.99.20-3</p>
+<p>VPC components on Amazon side can be created by using Scenario number 3 (http://docs.amazonwebservices.com/AmazonVPC/latest/UserGuide/VPC_Scenario3.html) and configuration can be obtained from AWS Management console by right click on VPN configuration -> download). Also, you need to setup security groups for SSH which is also explained in Scenario3.</p>
+<p><!--more--></p>
+<p>Example configuration files are following (change your parameters, in this example public IP is 1.1.1.1 and Virtual Private Gateways are 2.2.2.2 and 3.3.3.3, change them and other parameters accordingly):</p>
+<p>Tunnel 1:<br />
+Pre-Shared Key : AAAA<br />
+Outside IP Addresses:<br />
+- Customer Gateway : 1.1.1.1<br />
+- Virtual Private Gateway : 2.2.2.2<br />
+Inside IP Addresses<br />
+- Customer Gateway : 169.254.248.10/30<br />
+- Virtual Private Gateway : 169.254.248.9/30<br />
+- Customer Gateway ASN : 65000<br />
+- Virtual Private Gateway ASN : 7224<br />
+- Neighbor IP Address : 169.254.248.9</p>
+<p>Tunnel 2:<br />
+Pre-Shared Key : BBBB<br />
+Outside IP Addresses:<br />
+- Customer Gateway : 1.1.1.1<br />
+- Virtual Private Gateway : 3.3.3.3<br />
+Inside IP Addresses<br />
+- Customer Gateway : 169.254.248.14/30<br />
+- Virtual Private Gateway : 169.254.248.13/30<br />
+- Customer Gateway ASN : 65000<br />
+- Virtual Private Gateway ASN : 7224<br />
+- Neighbor IP Address : 169.254.248.13</p>
+<p>On Debian server, we need to install following packages (as root):</p>
+<p>$ apt-get install ipsec-tools racoon quagga</p>
+<p>After installing packages, we need to setup following configuration files:</p>
+<p>/etc/racoon/psk.txt:</p>
+<p>(change secret keys to your own)<br />
+2.2.2.2 AAAA<br />
+3.3.3.3 BBBB</p>
+<p>/etc/racoon/racoon.conf:</p>
+<p>(change needed addresses):<br />
+remote 2.2.2.2 {<br />
+exchange_mode main;<br />
+lifetime time 28800 seconds;<br />
+proposal {<br />
+encryption_algorithm aes128;<br />
+hash_algorithm sha1;<br />
+authentication_method pre_shared_key;<br />
+dh_group 2;<br />
+}<br />
+generate_policy off;<br />
+}<br />
+remote 3.3.3.3 {<br />
+exchange_mode main;<br />
+lifetime time 28800 seconds;<br />
+proposal {<br />
+encryption_algorithm aes128;<br />
+hash_algorithm sha1;<br />
+authentication_method pre_shared_key;<br />
+dh_group 2;<br />
+}<br />
+generate_policy off;<br />
+}<br />
+sainfo address 169.254.248.10/30 any address 169.254.248.9/30 any {<br />
+pfs_group 2;<br />
+lifetime time 3600 seconds;<br />
+encryption_algorithm aes128;<br />
+authentication_algorithm hmac_sha1;<br />
+compression_algorithm deflate;<br />
+}<br />
+sainfo address 169.254.248.14/30 any address 169.254.248.13/30 any {<br />
+pfs_group 2;<br />
+lifetime time 3600 seconds;<br />
+encryption_algorithm aes128;<br />
+authentication_algorithm hmac_sha1;<br />
+compression_algorithm deflate;<br />
+}</p>
+<p>/etc/ipsec-tools.conf</p>
+<p>(change needed addresses):<br />
+flush;<br />
+spdflush;<br />
+spdadd 169.254.248.10/30 169.254.248.9/30 any -P out ipsec<br />
+esp/tunnel/1.1.1.1-2.2.2.2/require;<br />
+spdadd 169.254.248.9/30 169.254.248.10/30 any -P in ipsec<br />
+esp/tunnel/2.2.2.2-1.1.1.1/require;<br />
+spdadd 169.254.248.14/30 169.254.248.13/30 any -P out ipsec<br />
+esp/tunnel/1.1.1.1-3.3.3.3/require;<br />
+spdadd 169.254.248.13/30 169.254.248.14/30 any -P in ipsec<br />
+esp/tunnel/3.3.3.3-1.1.1.1/require;<br />
+spdadd 169.254.248.10/30 10.0.0.0/16 any -P out ipsec<br />
+esp/tunnel/1.1.1.1-2.2.2.2/require;<br />
+spdadd 10.0.0.0/16 169.254.248.10/30 any -P in ipsec<br />
+esp/tunnel/2.2.2.2-1.1.1.1/require;<br />
+spdadd 169.254.248.14/30 10.0.0.0/16 any -P out ipsec<br />
+esp/tunnel/1.1.1.1-3.3.3.3/require;<br />
+spdadd 10.0.0.0/16 169.254.248.14/30 any -P in ipsec<br />
+esp/tunnel/3.3.3.3-1.1.1.1/require;</p>
+<p>/etc/quagga/bgpd.conf:</p>
+<p>(here you can choose your own password, and change needed addresses)<br />
+hostname ec2-vpn<br />
+password passWord<br />
+enable password passWord<br />
+!<br />
+log file /var/log/quagga/bgpd<br />
+!debug bgp events<br />
+!debug bgp zebra<br />
+debug bgp updates<br />
+!<br />
+router bgp 65000<br />
+bgp router-id 1.1.1.1<br />
+network 169.254.248.10/30<br />
+network 169.254.248.14/30<br />
+network 0.0.0.0/0<br />
+!<br />
+! aws tunnel #1 neighbour<br />
+neighbor 169.254.248.9 remote-as 7224<br />
+!<br />
+! aws tunnel #2 neighbour<br />
+neighbor 169.254.248.13 remote-as 7224<br />
+!<br />
+line vty</p>
+<p>/etc/quagga/zebra.conf:</p>
+<p>(put password you have choosen in bgpd.conf):<br />
+hostname ec2-vpn<br />
+password passWord<br />
+enable password passWord<br />
+!<br />
+! list interfaces<br />
+interface eth0<br />
+interface lo<br />
+!<br />
+line vty</p>
+<p>/etc/quagga/daemons:<br />
+zebra=yes<br />
+bgpd=yes</p>
+<p>After setting up configuration files, some changes needs to be done on files permissions / ownership:<br />
+$ chmod 640 /etc/quagga/bgpd.conf<br />
+$ chmod 640 /etc/quagga/zebra.conf<br />
+$ chmod 640 /etc/quagga/debian.conf<br />
+$ chown quagga.quaggavty /etc/quagga/*.onf<br />
+$ chown quagga.quaggavty /etc/quagga/*.conf</p>
+<p>Also, inside IP addresses needs to be setup on interface:<br />
+$ ip a a 169.254.248.10/30 dev eth0<br />
+$ ip a a 169.254.248.14/30 dev eth0</p>
+<p>Starting services and checking:</p>
+<p>(following is useful for racoon debugging):<br />
+$ racoon -d -v -F -f /etc/racoon/racoon.conf</p>
+<p>or via init script:<br />
+$ /etc/init.d/racoon start<br />
+$ /etc/init.d/setkey start<br />
+$/etc/init.d/quagga start</p>
+<p>Checking bgp and logs:<br />
+$ ip address<br />
+$ nc localhost 2605<br />
+$ show ip bgp<br />
+$ tail -f /var/log/syslog<br />
+$ route -v<br />
+$ ip route</p>
+<p>Basically, after this setup, you should be able to login to your VPC instances via SSH which are in private subnet and which have routing tables towards VirtualGateway.</p>

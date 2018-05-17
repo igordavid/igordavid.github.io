@@ -1,0 +1,48 @@
+---
+layout: post
+status: publish
+published: true
+title: Copy file to s3 with Ruby SDK v2
+author:
+  display_name: admin
+  login: admin
+  email: igord@bra.in.rs
+  url: ''
+author_login: admin
+author_email: igord@bra.in.rs
+wordpress_id: 99
+wordpress_url: http://www.cloudhowto.org/?p=99
+date: '2014-09-16 15:38:33 +0100'
+date_gmt: '2014-09-16 15:38:33 +0100'
+categories:
+- Ruby
+tags: []
+comments: []
+---
+<p>There are many different techniques for centralized log management and built-in tools<br />
+Sometimes you want to collect all of them to single location, for example AWS S3.</p>
+<p>Here is useful script for copying files from local machine to AWS S3 with Ruby SDK v2, it is assumed to run it from EC2 instance which have enabled IAM roles, so no credentials are needed. It will copy log files into different S3 folder names based on instance hostname, which can be handy if you need to download them again:</p>
+<pre><code>
+ #!/usr/local/bin/ruby
+ #
+ require 'aws-sdk-core'
+ def logs()
+ #connect to S3Aws.config[:region] = 'eu-west-1'
+     s3 = Aws::S3::Client.new
+     #get file list with full path
+     file_list = Dir.glob("/var/log/httpd/*your_logs_names*")
+     #declare time
+     vreme = Time.now
+     vreme2 = "#{vreme.year}_#{vreme.month}_#{vreme.day}"
+     #declare hostname
+     hostname = `hostname`.chomp
+     #open each log file
+     file_list.each {|yo|
+         file_open = File.read(yo)
+         #obtain only filename, without path:
+         file_name = File.basename(yo)
+         #upload files:
+         s3.put_object(body: file_open, bucket: "bucket-name/#{hostname}/var/log/httpd", key: file_name)
+     }
+ end</code></pre>
+<p>logs()</p>

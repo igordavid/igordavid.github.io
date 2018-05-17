@@ -1,0 +1,36 @@
+---
+layout: post
+status: publish
+published: true
+title: Simple Ruby script for launching instance
+author:
+  display_name: admin
+  login: admin
+  email: igord@bra.in.rs
+  url: ''
+author_login: admin
+author_email: igord@bra.in.rs
+wordpress_id: 112
+wordpress_url: http://www.cloudhowto.org/?p=112
+date: '2014-10-24 15:28:44 +0100'
+date_gmt: '2014-10-24 15:28:44 +0100'
+categories:
+- Ruby
+tags: []
+comments: []
+---
+<p><code></p>
+<pre>#!/usr/bin/ruby
+require 'aws-sdk-core'
+def run_inst(size,ami,num)
+  Aws.config[:region] = 'eu-west-1'
+  ec2 = Aws::EC2::Client.new
+  ec2.run_instances(image_id:"#{ami}",min_count:"1",max_count:"#{num}",key_name:"KEY",security_group_ids:["SG-ID"],instance_type:"#{size}",subnet_id:"SUB-ID",instance_initiated_shutdown_behavior:"stop")
+end
+if ARGV.count == 0
+  puts "usage: run-instances.rb INSTANCE_SIZE AMI INSTANCE_NUM "
+else
+  run_inst(ARGV[0],ARGV[1],ARGV[2])
+end
+</pre>
+<p></code></p>

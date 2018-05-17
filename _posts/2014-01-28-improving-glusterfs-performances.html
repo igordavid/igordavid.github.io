@@ -1,0 +1,33 @@
+---
+layout: post
+status: publish
+published: true
+title: Improving GlusterFS performances
+author:
+  display_name: admin
+  login: admin
+  email: igord@bra.in.rs
+  url: ''
+author_login: admin
+author_email: igord@bra.in.rs
+wordpress_id: 50
+wordpress_url: http://www.cloudhowto.org/?p=50
+date: '2014-01-28 12:59:26 +0000'
+date_gmt: '2014-01-28 12:59:26 +0000'
+categories:
+- Linux
+tags: []
+comments: []
+---
+<p>There are many ways to improve GlusterFS performances, but I will mention here two ways:</p>
+<p>- Increasing "performance.cache-size", this is done by GlusterCLI (for example, increasing to 128MB):</p>
+<p><code>> volume set VOL_NAME performance.cache-size 128738368 </code></p>
+<p>- Changing mount option to NFS, instead of native FUSE:</p>
+<p><code>mount -t nfs -o _netdev,noatime,vers=3,direct-io-mode=disabled SERVER:/VOL_NAME /MOUNT_POINT </code></p>
+<p>The key success is to measure performances, and after applying those two changes here are improvements on a Wordpress website, with RDS as a database.</p>
+<p>BEFORE:</p>
+<p><a href="http://www.cloudhowto.org/wp-content/uploads/2014/01/before_glusterfs_changes.png"><img class="alignnone size-medium wp-image-51" alt="Before GlusterFS changes" src="http://www.cloudhowto.org/wp-content/uploads/2014/01/before_glusterfs_changes-300x160.png" width="300" height="160" /></a></p>
+<p>&nbsp;</p>
+<p>AFTER:</p>
+<p><a href="http://www.cloudhowto.org/wp-content/uploads/2014/01/after_glusterfs_changes.png"><img class="alignnone size-medium wp-image-52" alt="After GlusterFS changes" src="http://www.cloudhowto.org/wp-content/uploads/2014/01/after_glusterfs_changes-300x160.png" width="300" height="160" /></a></p>
+<p>&nbsp;</p>

@@ -1,0 +1,41 @@
+---
+layout: post
+status: publish
+published: true
+title: NFS AWS how to
+author:
+  display_name: admin
+  login: admin
+  email: igord@bra.in.rs
+  url: ''
+author_login: admin
+author_email: igord@bra.in.rs
+wordpress_id: 13
+wordpress_url: http://www.cloudhowto.org/?p=13
+date: '2013-07-10 11:52:25 +0100'
+date_gmt: '2013-07-10 11:52:25 +0100'
+categories:
+- AWS
+- Linux
+tags: []
+comments: []
+---
+<p>So... everyone are speaking about having single storage unit in AWS. That's a real demand these days, and here is one way of doing that. The answer is - NFS!</p>
+<p>So basically, you do the following:</p>
+<p>- launch/create VPC</p>
+<p>http://docs.aws.amazon.com/AmazonVPC/latest/GettingStartedGuide/ExercisePreqs.html</p>
+<p>- create VPC private subnet</p>
+<p>http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Scenario2.html</p>
+<p>- Launch instance in public subnet, and create NFS server:</p>
+<p>yum install nfs-utils.x86_64 nfs-utils-lib-devel.x86_64 nfs4-acl-tools.x86_64 nfs-utils-lib.x86_64</p>
+<p>- Create raid1 with "mdadm" tool as described here http://www.igord.net/2013/02/04/mdadm-raid-configuration/</p>
+<p>- Mount your new mdadm raid volume to /mnt/data</p>
+<p>- Put into /etc/exports the following (change IP addresses to suit your private IPs):</p>
+<p>/mnt/data                       10.0.2.123(rw,sync,fsid=0,no_root_squash) 10.0.3.123(rw,sync,fsid=0,no_root_squash)</p>
+<p>- On the client side:</p>
+<p>yum install nfs-utils.x86_64 nfs-utils-lib.x86_64</p>
+<p>- Put into NFS client /etc/fstab:</p>
+<p>10.0.2.123:/ /mnt/data/ nfs4 soft,intr,rsize=8192,wsize=8192,nosuid</p>
+<p>(adopt your private IP of NFS server)</p>
+<p>$ mount -a</p>
+<p>that's it!</p>

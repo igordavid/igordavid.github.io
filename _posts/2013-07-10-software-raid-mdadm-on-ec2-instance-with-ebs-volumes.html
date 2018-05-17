@@ -1,0 +1,47 @@
+---
+layout: post
+status: publish
+published: true
+title: Software Raid mdadm on EC2 instance with EBS volumes
+author:
+  display_name: admin
+  login: admin
+  email: igord@bra.in.rs
+  url: ''
+author_login: admin
+author_email: igord@bra.in.rs
+wordpress_id: 16
+wordpress_url: http://www.cloudhowto.org/?p=16
+date: '2013-07-10 11:56:47 +0100'
+date_gmt: '2013-07-10 11:56:47 +0100'
+categories:
+- Linux
+tags: []
+comments: []
+---
+<p>If you want to use EBS volumes on EC2 instance as a software raid, there is very nice way to do that.</p>
+<p>You need to perform few steps, for example creating Raid1 and preserving it's creation after server reboot:</p>
+<p># yum install mdadm</p>
+<p>Now, first check your devices, for this example we will presume their names are /dev/xvdf and /dev/xvdg (modify this to suit your needs):</p>
+<p># mdadm --create --verbose /dev/md0 --level=1 --raid-devices=2 /dev/xvdf /dev/xvdg</p>
+<p>Next, we want to find out if everything went OK:</p>
+<p># cat /proc/mdstat</p>
+<p>You should see something like:</p>
+<p>Personalities : [raid1]<br />
+md0 : active raid1 xvdg[2] xvdf[0]<br />
+5241844 blocks super 1.2 [2/2] [UU]</p>
+<p>unused devices: <none></p>
+<p>Another way to grab mdadm details (following command should give you mdadm device name, which is in our case /dev/md0):</p>
+<p># mdadm --detail --scan</p>
+<p>Now you can ask for more details about that mdadm device (/dev/md0):</p>
+<p># mdadm --detail /dev/md0</p>
+<p>Now if you want to preserve mdadm on next reboot, do this:</p>
+<p># mv /etc/mdadm.conf /etc/mdadmconf.-backup</p>
+<p># mdadm --detail --scan > /etc/mdadm.conf</p>
+<p>After this step, you have ready mdadm system and device, but without any filesystem actually installed. Now you can create a filesystem on mdadm device:</p>
+<p># mkfs.ext4 /dev/md0</p>
+<p>After that, you can put your mdadm device in /etc/fstab, for example:</p>
+<p>/dev/md0                /mnt/raid1                   ext4    defaults        0 0</p>
+<p>And mount it:</p>
+<p># mount /mnt/raid1</p>
+<p>That's it!</p>

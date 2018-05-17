@@ -1,0 +1,59 @@
+---
+layout: post
+status: publish
+published: true
+title: Starting with Docker
+author:
+  display_name: admin
+  login: admin
+  email: igord@bra.in.rs
+  url: ''
+author_login: admin
+author_email: igord@bra.in.rs
+wordpress_id: 144
+wordpress_url: http://www.cloudhowto.org/?p=144
+date: '2015-01-14 15:06:22 +0000'
+date_gmt: '2015-01-14 15:06:22 +0000'
+categories:
+- Linux
+tags: []
+comments: []
+---
+<p>Docker is new hot thing and buzz word for some time now. As explained in <a title="ZDnet blog" href="http://www.zdnet.com/article/what-is-docker-and-why-is-it-so-darn-popular/" target="_blank">ZDnet blog</a>:</p>
+<p>"Docker, a new container technology, is hotter than hot because it makes it possible to get far more apps running on the same old servers and it also makes it very easy to package and ship programs"</p>
+<p>So basically, it allows you to create environment similar to virtual machine, execute commands, write your own code, test it, create image from it, share it with other colleagues, run it again, and all that without actually creating any virtual machine and paying for it!</p>
+<p>To start it using on Ubuntu and to get the latest version, you do this:</p>
+<p><!--more--></p>
+<pre><code>$ wget -qO- https://get.docker.io/gpg | sudo apt-key add -
+$ sudo sh -c "echo deb http://get.docker.io/ubuntu docker main > /etc/apt/sources.list.d/docker.list"
+$ sudo apt-get update
+$ sudo apt-get install lxc-docker
+
+This will install "Docker version 1.4.1, build 5bc2ff8" now (14th January).
+
+Now, if you want to install Ubuntu docker images, you choose from one of the Ubuntu public images, for example:
+
+$ docker pull tianon/docker-brew-ubuntu-core
+
+After that, you can list images with this command:
+
+$ docker images
+
+To launch new container from ubuntu image (<a title="here" href="https://docs.docker.com/introduction/understanding-docker/#what-happens-when-you-run-a-container" target="_blank">here</a> is nice explanation of what exactly this command do):
+
+$ docker run -i -t ubuntu /bin/bash
+
+To list containers:
+
+$ docker ps ls
+
+To attach to some container:
+
+$ docker attach container_number
+
+To attach to some containter at another tty
+
+$ docker exec -it <code>container_number</code> bash
+
+For all other commands, <a title="here" href="https://github.com/wsargent/docker-cheat-sheet" target="_blank">here</a> is brilliant cheat-sheat!
+</code></pre>

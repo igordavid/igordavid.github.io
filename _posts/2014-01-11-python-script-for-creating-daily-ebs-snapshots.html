@@ -1,0 +1,77 @@
+---
+layout: post
+status: publish
+published: true
+title: Python script for creating daily EBS snapshots
+author:
+  display_name: admin
+  login: admin
+  email: igord@bra.in.rs
+  url: ''
+author_login: admin
+author_email: igord@bra.in.rs
+wordpress_id: 39
+wordpress_url: http://www.cloudhowto.org/?p=39
+date: '2014-01-11 17:54:38 +0000'
+date_gmt: '2014-01-11 17:54:38 +0000'
+categories:
+- Python Boto
+tags: []
+comments: []
+---
+<p>Here is example script for making every day EBS snapshots, and deleting snapshots older than 2 weeks. Here I am copying 8 GB root volume of mail server, so description is "mail-root-8G-DATE", but you can choose any other</p>
+<p>After creating script, put it into your daily crontab.</p>
+<p><code><br />
+#!/usr/bin/env python<br />
+# the script will create snapshots of volumes and delete volumes which are older than 2 weeks</p>
+<p>import boto<br />
+from boto import ec2<br />
+from datetime import datetime<br />
+from datetime import timedelta</p>
+<p>conn_eu = boto.ec2.connect_to_region('eu-west-1',aws_access_key_id='AWS_ACCESS_KEY',aws_secret_access_key='AWS_SECRET_KEY')</p>
+<p>now = datetime.now()</p>
+<p>today = now.date()</p>
+<p>#first EBS volume description<br />
+vmail_root_vol_description = "mail-root-8G-%s" % today<br />
+#second EBS volume decription<br />
+vmail_mail_vol_description = "vmail-50G-%s" % today<br />
+#third EBS volume description<br />
+vhosting3_gluster_vol_description = "vhosting3-gluster-30G-%s" % today</p>
+<p>#create snapshot for first EBS volume<br />
+conn_eu.create_snapshot ("vol-XXXXXXXX", description=vmail_root_vol_description)<br />
+#create snapshot for second EBS volume<br />
+conn_eu.create_snapshot ("vol-XXXXXXXX", description=vmail_mail_vol_description)<br />
+#create snapshot for third EBS volume:<br />
+conn_eu.create_snapshot ("vol-XXXXXXXX", description=vhosting3_gluster_vol_description)</p>
+<p># calculate description two weeks from now:<br />
+two_weeks_ago = (today - timedelta(days=13))<br />
+vmail_root_vol_description_two_weeks_ago = "vmail-root-8G-%s" % two_weeks_ago<br />
+vmail_mail_vol_description_two_weeks_ago = "vmail-50G-%s" % two_weeks_ago<br />
+vhosting2_root_vol_description = "vhosting3-gluster-30G-%s" % two_weeks_ago</p>
+<p># grab snapshot for first EBS volume 2 weeks ago, and delete it<br />
+two_weeks_ago_vmail_root_snapshot = conn_eu.get_all_snapshots(filters = {"description": vmail_root_vol_description_two_weeks_ago})<br />
+#grab snapshot-ID (since result is in list-of-tuples format)<br />
+try:<br />
+	two_weeks_ago_all_snapshots2 = two_weeks_ago_vmail_root_snapshot[0]<br />
+	two_weeks_ago_all_snapshots3 = two_weeks_ago_vmail_root_snapshot2.id<br />
+	#delete snapshot<br />
+	conn_eu.delete_snapshot(two_weeks_ago_all_snapshots3)<br />
+except:<br />
+	print "no snapshot two weeks ago to delete!"</p>
+<p>#same for second EBS volume<br />
+two_weeks_ago_vmail_mail_snapshot = conn_eu.get_all_snapshots(filters = {"description": vmail_mail_vol_description_two_weeks_ago})<br />
+try:<br />
+	two_weeks_ago_vmail_mail_snapshot2 = two_weeks_ago_vmail_mail_snapshot[0]<br />
+	two_weeks_ago_vmail_mail_snapshot3 = two_weeks_ago_vmail_mail_snapshot2.id<br />
+	conn_eu.delete_snapshot(two_weeks_ago_vmail_mail_snapshot3)<br />
+except:<br />
+	print "no snapshot two weeks ago to delete!"</p>
+<p>#same for third</p>
+<p>two_weeks_ago_vhosting2 = conn_eu.get_all_snapshots(filters = {"description": vhosting2_root_vol_description})<br />
+try:<br />
+	two_weeks_ago_vhosting22 = two_weeks_ago_vhosting2[0]<br />
+	two_weeks_ago_vhosting23 = two_weeks_ago_vhosting22.id<br />
+	conn_eu.delete_snapshot(two_weeks_ago_vhosting23)<br />
+except:<br />
+	print "no snapshot two weeks ago to delete!"</p>
+<p></code></p>

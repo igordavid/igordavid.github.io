@@ -1,0 +1,29 @@
+---
+layout: post
+status: publish
+published: true
+title: Calculate top networking talkers with tcpdump
+author:
+  display_name: admin
+  login: admin
+  email: igord@bra.in.rs
+  url: ''
+author_login: admin
+author_email: igord@bra.in.rs
+wordpress_id: 28
+wordpress_url: http://www.cloudhowto.org/?p=28
+date: '2013-09-09 23:12:43 +0100'
+date_gmt: '2013-09-09 23:12:43 +0100'
+categories:
+- Linux
+tags: []
+comments: []
+---
+<p>If you want to analyze top networking talkers via tcpdump on your server, this is explanation how to do that.</p>
+<p>First capture traffic with "tcpdump" (this will capture 20K packets, so replace it with something else for example -c 5000 and replace "eth0" to suit your needs):</p>
+<p><code><br />
+# tcpdump -tnn -c 20000 -i eth0 -w tcpdump.pcap</code></p>
+<p>Sort nicely whole list:</p>
+<p><code># tcpdump -r tcpdump.pcap | awk -F "." '{print $1"."$2"."$3"."$4}' | sort | uniq -c | sort -nr >> top_talkers</code></p>
+<p>Then you can calculate top 10 talkers:</p>
+<p><code>cat top_talkers | awk {'print $4'} | sort | uniq -c | sort -nr | head -n 10</code></p>

@@ -1,0 +1,36 @@
+---
+layout: post
+status: publish
+published: true
+title: OpsWorks managing users - Chef gem ruby-shadow
+author:
+  display_name: admin
+  login: admin
+  email: igord@bra.in.rs
+  url: ''
+author_login: admin
+author_email: igord@bra.in.rs
+wordpress_id: 92
+wordpress_url: http://www.cloudhowto.org/?p=92
+date: '2014-08-07 16:45:11 +0100'
+date_gmt: '2014-08-07 16:45:11 +0100'
+categories:
+- OpsWorks
+tags: []
+comments: []
+---
+<p>If you want to manage users with your OpsWorks installation, you can do it with Chef "user" recipes.</p>
+<p>For example, if you want to change password for some user on all machines, the recipe is pretty simple:</p>
+<p><code>user "deploy" do<br />
+	password "PASS"<br />
+end</code></p>
+<p>PASS can be generated with "openssl" tool:</p>
+<p><code>#openssl passwd "PASS"</code></p>
+<p>Please note that "user" recipe will require ruby-shadow gem, which NEEDS to be installed via chef-gem</p>
+<p><code>chef_gem "ruby-shadow" do<br />
+	action :install<br />
+end</code></p>
+<p>If you install it via "package" recipe it won't work, for example:</p>
+<p><code>package 'ruby-shadow' do<br />
+	action :install<br />
+end</code></p>

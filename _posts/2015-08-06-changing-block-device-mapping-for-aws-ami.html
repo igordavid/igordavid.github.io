@@ -1,0 +1,28 @@
+---
+layout: post
+status: publish
+published: true
+title: Changing block-device-mapping for AWS AMI
+author:
+  display_name: admin
+  login: admin
+  email: igord@bra.in.rs
+  url: ''
+author_login: admin
+author_email: igord@bra.in.rs
+wordpress_id: 170
+wordpress_url: http://www.cloudhowto.org/?p=170
+date: '2015-08-06 11:33:51 +0100'
+date_gmt: '2015-08-06 11:33:51 +0100'
+categories:
+- AWS
+- AWS CLI
+tags: []
+comments: []
+---
+<p>As you know, every AWS AMI have it's own <a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/block-device-mapping-concepts.html" title="Block Device mapping">Block Device Mapping</a>.</p>
+<p>What if you want to modify it for some AMI? For example, you have all EBS volumes "delete-on-termination" flag set to "false" and you want to change it to "true", so you avoid having EBS volumes hanging after instance deletion.</p>
+<p>Well, you can't modify existing AMI block device mapping. You need either to create new image (AMI) from instance or to modify block device mapping during instance launch.</p>
+<p>Here is one code snippet with <a href="http://stedolan.github.io/jq/" title="JQ" target="_blank">"jq"</a> tool which you can use to describe current image, change it's "delete-on-termination" flag to true and register new image from the running instance (which was created originally from that image):</p>
+<p><code>$aws ec2 describe-images --image-ids $ORIGINAL_AMI | jq '.Images[0] | {BlockDeviceMappings: [.BlockDeviceMappings[] | {DeviceName: .DeviceName, Ebs: .Ebs | {DeleteOnTermination: true}}]}' | sed '1d;$d'| sed -e "s/\"BlockDeviceMappings\"://g" > NEW_BLOCK_DEVICE_MAPPING.TXT</p>
+<p>$aws register-image --instance-id INSTANCE-ID --block-device-mappings file://NEW_BLOCK_DEVICE_MAPPING.TXT --name "new-image-name" --description "Image description"</code></p>

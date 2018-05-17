@@ -1,0 +1,35 @@
+---
+layout: post
+status: publish
+published: true
+title: Crontab with Ruby Whenever
+author:
+  display_name: admin
+  login: admin
+  email: igord@bra.in.rs
+  url: ''
+author_login: admin
+author_email: igord@bra.in.rs
+wordpress_id: 89
+wordpress_url: http://www.cloudhowto.org/?p=89
+date: '2014-08-01 15:25:19 +0100'
+date_gmt: '2014-08-01 15:25:19 +0100'
+categories:
+- Ruby
+tags: []
+comments: []
+---
+<p>Ruby have one very powerful tool called <a href="https://github.com/javan/whenever" title="Whenever">whenever</a></p>
+<p>You can install it with</p>
+<p><code>gem install whenever</code></p>
+<p>After installation, you need to create config/schedule.rb file, where you can put your crontab jobs.</p>
+<p>Schedule.rb syntax is pretty straightforward, for example:</p>
+<p><code><br />
+every :day, :at => '12:30am' do<br />
+command '/home/ec2-user/script'<br />
+end<br />
+</code></p>
+<p>The schedule.rb from above will automatically create cronjob which will execute every day at 12:30 after midnight.</p>
+<p>All you need to do is call command:</p>
+<p><code>whenever --update</code></p>
+<p>... and it will setup cronjob for you automatically!</p>
