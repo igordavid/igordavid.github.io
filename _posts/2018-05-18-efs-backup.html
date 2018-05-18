@@ -1,0 +1,23 @@
+---
+layout: post
+status: publish
+published: true
+title: EFS backup
+author_login: admin
+author_email: igord@bra.in.rs
+wordpress_id: 192
+wordpress_url: http://cloud.igord.net/?p=192
+date: '2018-05-19 11:55:54 +0100'
+date_gmt: '2018-05-19 11:55:54 +0100'
+categories:
+- AWS
+tags: []
+comments: []
+---
+<p><a href="https://aws.amazon.com/efs/">EFS</a> is shared storage which you can use as NFS mount point. It is highly available and scalable in-house solution by AWS which is great</p><br/>
+<p>It has really great benefits such as automatic scaling, scaleable performance, high available and durable and you don't need to worry about configuring all those low-level storage details which can sometimes be real pain<br />
+<p> However, it is missing one main point - it doesn't have backup built-in! Meaning that if your data is deleted from EFS, it is gone for good. So you need to implement backup solution for it</p><br/>
+<p> Here is one:</p>
+<p> You launch <a href="https://aws.amazon.com/datapipeline/"> AWS DataPipeline</a> to launch EC2 instance, which will then mount EFS to it, perform S3 sync to S3 buckets, un-mount after process is finished and delete Ec2 instance. AWS DataPipeline will capture Bash script output and if there is a problem, it will send notification to SNS, which will in turn send e-mail to you. That way you will be informed if something is wrong</p>
+<p> You can find EFS Backup script on <a href="https://github.com/igordavid/bash/blob/master/efs_backup.sh">my github</a></p>
+<p> Enjoy!</p>
