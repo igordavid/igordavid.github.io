@@ -1,0 +1,31 @@
+---
+layout: post
+status: publish
+published: true
+title: No Fargate configuration exists for given values
+author_login: admin
+author_email: igord@bra.in.rs
+wordpress_id: 192
+date: '2018-05-21 21:55:54 +0100'
+date_gmt: '2018-05-21 21:55:54 +0100'
+categories:
+- AWS
+tags: []
+comments: []
+---
+<p>If you are using AWS <a href="https://aws.amazon.com/fargate/" target="_blank">Fargate</a> via AWS Cloudformation and are receiving an error "No Fargate configuration exists for given values", you are most likely not specifying correct values for RAM in your Task definition </p><br/>
+<p>In "standard" (non-Fargate) ECS Task, you can have memory values sliced and defined as you want, however in Fargate you need to specify those with the following values:</p><br/>
+
+
+<p>    0.5GB, 1GB, 2GB - Available cpu values: 256 (.25 vCPU)</p><br/>
+
+<p>    1GB, 2GB, 3GB, 4GB - Available cpu values: 512 (.5 vCPU)</p><br/>
+
+<p>    2GB, 3GB, 4GB, 5GB, 6GB, 7GB, 8GB - Available cpu values: 1024 (1 vCPU)</p><br/>
+
+<p>    Between 4GB and 16GB in 1GB increments - Available cpu values: 2048 (2 vCPU)</p><br/>
+
+<p>    Between 8GB and 30GB in 1GB increments - Available cpu values: 4096 (4 vCPU)</p><br/>
+
+<p>More details <a href="https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecs-taskdefinition.html#cfn-ecs-taskdefinition-memory" target="_blank"> here</a></p>
+
