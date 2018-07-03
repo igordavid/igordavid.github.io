@@ -19,6 +19,6 @@ comments: []
 <p> However, it is missing one main point - it doesn't have backup built-in! Meaning that if your data is deleted from EFS, it is gone for good. So you need to implement backup solution for it</p><br/>
 <p> Here is one:</p>
 <p> You launch <a href="https://aws.amazon.com/datapipeline/"> AWS DataPipeline</a> to launch EC2 instance, which will then mount EFS to it, perform S3 sync to S3 buckets, un-mount after process is finished and delete Ec2 instance. AWS DataPipeline will capture Bash script output and if there is a problem, it will send notification to SNS, which will in turn send e-mail to you. That way you will be informed if something is wrong</p>
-![EFS]({{ site.url }}/assets/efs_backup.jpg )
+<img src="{{site.url}}/assets/efs_backup.jpg" alt="EFS"/>
 <p> You can find EFS Backup script on <a href="https://github.com/igordavid/bash/blob/master/efs_backup.sh">my github</a></p>
 <p> Enjoy!</p>
