@@ -29,5 +29,7 @@ comments: []
 <p><code>aws ec2 describe-instances --filters "Name=instance-state-name,Values=running,Name=tag:Environment,Values=ENV_NAME,Name=tag:Project,Values=PROJECT_NAME" --profile PROFILE_NAME --query Reservations[*].Instances[*].State</code></p>
 <p>If you want to query and output certain values from Tags, for example instance Name, along with other details, you go like this:</p>
 <p><code> aws ec2 describe-instances --filters 'Name=tag:KEY,Values=VALUE' --query 'Reservations[].Instances[].[Tags[?Key==`Name`] | [0].Value,InstanceId,InstanceType]' --output table  </code></p>
+<p>Checking which Tags are present with instances:</p>
+<p><code> aws ec2 describe-instances --filters 'Name=tag:Application,Values=App1' --query 'Reservations[].Instances[].[Tags[?Key==`Environment`] | [0].Value]' --output text --region eu-west-1 | sort | uniq </code></p>
 <p>Also, you can <a title="configure" href="http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html" target="_blank">configure</a> your AWS CLI to work with profiles, so for example if you have different access keys for different environments, you can access them by using --profile (as shown above).</p>
 <p>Enjoy!</p>
