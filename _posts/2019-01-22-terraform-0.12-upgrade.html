@@ -1,25 +1,45 @@
+---
+layout: post
+status: publish
+published: true
+title: Upgrade to Terraform 0.12
+author:
+author_login: admin
+author_email: igord@bra.in.rs
+date: '2019-01-22 22:26:14 +0000'
+date_gmt: '2019-01-22 22:26:14 +0000'
+categories:
+- Terraform
+- News
+tags: []
+comments: []
+---
+
 As we all are eagearly waiting for Terraform 0.12 official release, there might be few issues
 when trying now to update to that version from previous one.
-
+<br>
 If you are getting errors such as:
-
+<br>
 "Error: Unsupported block type
 Error: Missing newline after argument"
-
+<br>
+<br>
 .. I would suggest that you run "$terraform fmt" with previous TF version (e.g. 0.10.7)
-
+<br>
 That should fix syntax for TF 0.12
-
+<br>
+<br>
 If you are getting error:
-
+<br>
 "The variable name "count" is reserved due to its special meaning inside module
 blocks."
-
+<br>
 ... I would suggest that you rename "count" variable as it's now reserved word.
-
+<br>
+<br>
 If you are getting error:
-
+<br>
 "Error: Failed to download module"
-
+<br>
 ... I would suggest you check if you have added "./dir_name" into your module path.
 
